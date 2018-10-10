@@ -54,6 +54,12 @@ def transition_block(input, nb_filter, dropout_rate=None, pooltype=1, weight_dec
 
 
 def dense_cnn_fn(input, nclass):
+    """
+    dense crnn网络骨干，没有封装成keras model, 特征下采样3次
+    :param input:
+    :param nclass:
+    :return: 网络输出tensor, output from softmax layer
+    """
     _dropout_rate = 0.2
     _weight_decay = 1e-4
 
@@ -85,6 +91,12 @@ def dense_cnn_fn(input, nclass):
 
 
 def dense_cnn_model(input_shape=(32, 280, 1), class_num=11):
+    """
+    封装成kears model, 图片输入，softmax输出
+    :param input_shape:
+    :param class_num:
+    :return:
+    """
     input = Input(shape=input_shape, name='the_input')
     output = dense_cnn_fn(input, class_num)
     dense_model = Model(input, output)
@@ -97,13 +109,19 @@ def ctc_lambda_func(args):
 
 
 def compile_model(img_h, nclass):
+    """
+    prepare model for training which is different from model for inference
+    ATTENTION: don't use this model for testing or inference
+    :param img_h:
+    :param nclass:
+    :return:
+    """
     basemodel = dense_cnn_model((img_h, None, 1), nclass)
     labels = Input(name='the_labels', shape=[None], dtype='float32')
+    # lengths below are required for ctc loss calculation
     input_length = Input(name='input_length', shape=[1], dtype='int64')
     label_length = Input(name='label_length', shape=[1], dtype='int64')
-
     loss_out = Lambda(ctc_lambda_func, output_shape=(1,), name='ctc')([basemodel.output, labels, input_length, label_length])
-
     model = Model(inputs=[basemodel.input, labels, input_length, label_length], outputs=loss_out)
     # from keras.utils import multi_gpu_model
     # model = multi_gpu_model(model, 2)

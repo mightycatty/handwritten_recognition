@@ -17,7 +17,7 @@ from data_utils_pack.data_utils import get_file_list
 input = Input(shape=(ModelConfig.img_h, None, 1), name='the_input')
 y_pred = dense_cnn_fn(input, nclass)
 basemodel = Model(inputs=input, outputs=y_pred)
-basemodel_dir = 'D:\herschel\changrong\sequential_ocr\models\letter-02-0.17.h5'
+basemodel_dir = 'D:\herschel\changrong\sequential_ocr\models\letter_model\letter-0.41-0.58.h5'
 modelPath = os.path.join(os.getcwd(), basemodel_dir)
 if os.path.exists(modelPath):
     basemodel.load_weights(modelPath)

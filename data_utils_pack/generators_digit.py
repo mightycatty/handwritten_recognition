@@ -220,7 +220,7 @@ def generator_with_emnist(batch_size, width=256, height=64, max_len=6):
 
 
 def merge_generator(batch_size, width=256, height=64, max_len=6):
-    per = [0, 3, 1, 1]
+    per = [1, 1, 1, 1]
     cap_gen = generator_with_cap(int(batch_size*per[0]/sum(per))+1, width, height, max_len)
     folder_gen = generator_with_folder_img(int(batch_size*per[1]/sum(per))+1, width, height, max_len)
     legacy_gen = generator_with_legacy_data(int(batch_size*per[2]/sum(per))+1, width, height, max_len)
@@ -329,7 +329,7 @@ def legacy_test():
 if __name__ == '__main__':
     import uuid
     import matplotlib.pyplot as plt
-    gen = merge_generator(128, 128, 48)
+    gen = evaluation_generator(4)
     saved_folder = 'H:\\test\\digit'
     os.makedirs(saved_folder, exist_ok=True)
     count_limit = 1000
@@ -337,18 +337,18 @@ if __name__ == '__main__':
     while 1:
         x, y = next(gen)
         for x_item, y_item in zip(x['the_input'], x['the_labels']):
-            x_item = np.squeeze(x_item) * 255
+            x_item = np.squeeze(x_item)
             x_item = np.uint8(x_item)
             y_item = y_item[y_item < 1000].astype(np.uint8)
             y_item = ''.join(str(x) for x in y_item)
             saved_name = '{}_{}.png'.format(y_item, str(uuid.uuid4()))
             saved_name = os.path.join(saved_folder, saved_name)
-            cv2.imwrite(saved_name, x_item)
+            # cv2.imwrite(saved_name, x_item)
             count += 1
         if count_limit is not None:
             if count > count_limit:
                 break
-            # plt.imshow(x_item)
-            # plt.title(y_item)
-            # plt.show()
+            plt.imshow(x_item)
+            plt.title(y_item)
+            plt.show()
     # legacy_test()

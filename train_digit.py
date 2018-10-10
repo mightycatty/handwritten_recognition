@@ -1,13 +1,13 @@
 # -*- coding:utf-8 -*-
 import os
 os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID" # see issue #152
-os.environ["CUDA_VISIBLE_DEVICES"]="0"
+os.environ["CUDA_VISIBLE_DEVICES"]="1"
 import numpy as np
 import tensorflow as tf
 from keras import backend as K
 from keras.callbacks import EarlyStopping, ModelCheckpoint, LearningRateScheduler, TensorBoard
 from build_model import compile_model
-from data_utils_pack.generators_digit import generator_with_cap, generator_with_folder_img, merge_generator, evaluation_generator
+from data_utils_pack.generators_digit import generator_with_cap, generator_with_folder_img, merge_generator, evaluation_generator, generator_with_emnist
 from config.config_digit import ModelConfig, TrainingConfig
 
 
@@ -34,9 +34,9 @@ if __name__ == '__main__':
     else:
         init_epoch = 0
     init_epoch = 0
-    train_loader = merge_generator(ModelConfig.batch_size, ModelConfig.img_w, ModelConfig.img_h)
+    train_loader = generator_with_folder_img(ModelConfig.batch_size, ModelConfig.img_w, ModelConfig.img_h)
     test_loader = evaluation_generator(ModelConfig.batch_size, ModelConfig.img_w, ModelConfig.img_h)
-    checkpoint = ModelCheckpoint(filepath='./models/digit_model/digit-{loss:.2f}-{val_acc:.2f}.h5', monitor='val_loss',
+    checkpoint = ModelCheckpoint(filepath='./models/digit_model/digit-folder-{loss:.2f}-{val_acc:.2f}.h5', monitor='val_loss',
                                  save_best_only=False, save_weights_only=True)
     # lr_schedule = lambda epoch: 0.0005 * 0.4 ** epoch
     # learning_rate = np.array([lr_schedule(i) for i in range(10)])

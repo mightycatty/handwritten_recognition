@@ -25,8 +25,8 @@ for  i  in  range( 256 ):
 
 
 class SynthesisConfig(object):
-    noise_curve_per = 5
-    noise_dots_per = 5
+    noise_curve_per = 1
+    noise_dots_per = 1
 
 
 class _Captcha(object):
@@ -188,13 +188,13 @@ def image_distortion_test(im, resize_shape):
         )
         im = im.resize((w2, h2))
         im = im.transform((w, h), Image.QUAD, data)
-    # erode or dilate
-    if not random.randint(0, 10):
-        img_data = np.array(im)
-        kernel = np.ones((3, 3), np.uint8)
-        img_data = cv2.dilate(img_data, kernel, iterations=random.randint(0, 1))
-        img_data = cv2.erode(img_data, kernel, iterations=random.randint(0, 1))
-        im = Image.fromarray(img_data)
+    # # erode or dilate
+    # if not random.randint(0, 10):
+    #     img_data = np.array(im)
+    #     kernel = np.ones((3, 3), np.uint8)
+    #     img_data = cv2.dilate(img_data, kernel, iterations=random.randint(0, 1))
+    #     img_data = cv2.erode(img_data, kernel, iterations=random.randint(0, 1))
+    #     im = Image.fromarray(img_data)
     return im
 
 
