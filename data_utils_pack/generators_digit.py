@@ -194,7 +194,7 @@ def generator_with_emnist(batch_size, width=256, height=64, max_len=6):
         # 标签
         x_batch = []
         labels = np.ones([batch_size, max_len]) * 10000
-        input_length = np.zeros([batch_size, 1])
+        input_length = np.zeros([batch_size, 1]) * width // 8
         label_length = np.zeros([batch_size, 1])
         for i in range(batch_size):
             select_index = np.random.randint(0, data.shape[0], (random.randint(1, max_len)))
@@ -205,7 +205,6 @@ def generator_with_emnist(batch_size, width=256, height=64, max_len=6):
             # x = cv2.cvtColor(x, cv2.COLOR_BGR2GRAY)
             x = cv2.threshold(x, 0, 1, cv2.THRESH_BINARY+cv2.THRESH_OTSU)[-1]
             x_batch.append(x)
-            input_length[i] = width // 8
             labels[i, :len(y)] = [int(k) for k in y]
             label_length[i] = len(y)
         x_batch = np.stack(x_batch, axis=0)
@@ -329,26 +328,26 @@ def legacy_test():
 if __name__ == '__main__':
     import uuid
     import matplotlib.pyplot as plt
-    gen = evaluation_generator(4)
-    saved_folder = 'H:\\test\\digit'
+    gen = generator_with_emnist(64, 128, 48)
+    saved_folder = 'D:\herschel\changrong\sequential_ocr\\test_img\\train\digit\\emnist'
     os.makedirs(saved_folder, exist_ok=True)
-    count_limit = 1000
+    count_limit = 5000
     count = 0
     while 1:
         x, y = next(gen)
         for x_item, y_item in zip(x['the_input'], x['the_labels']):
             x_item = np.squeeze(x_item)
-            x_item = np.uint8(x_item)
+            x_item = np.uint8(x_item) * 255
             y_item = y_item[y_item < 1000].astype(np.uint8)
             y_item = ''.join(str(x) for x in y_item)
             saved_name = '{}_{}.png'.format(y_item, str(uuid.uuid4()))
             saved_name = os.path.join(saved_folder, saved_name)
-            # cv2.imwrite(saved_name, x_item)
+            cv2.imwrite(saved_name, x_item)
             count += 1
         if count_limit is not None:
             if count > count_limit:
                 break
-            plt.imshow(x_item)
-            plt.title(y_item)
-            plt.show()
+            # plt.imshow(x_item)
+            # plt.title(y_item)
+            # plt.show()
     # legacy_test()

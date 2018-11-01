@@ -30,28 +30,32 @@ class ModelServer(object):
         if os.path.exists(modelPath):
             self.basemodel.load_weights(modelPath)
         print (self.basemodel.summary())
+        self.basemodel.trainable = False
+        self.basemodel.save('sequential_digit')
         return
 
     def predict_from_dir(self, img_dir):
-        img = preprocessing_from_dir(img_dir)
+        img = preprocessing_from_dir_test(img_dir)
         X = np.expand_dims(img, axis=0)
         X = np.expand_dims(X, axis=-1)
         y_pred = self.basemodel.predict(X)
-        y_pred = np.squeeze(y_pred)
-        plt.subplot(211)
-        plt.imshow(img)
-        plt.subplot(212)
-        plt.imshow(y_pred.T)
-        plt.show()
+        y_pred = np.squeeze(y_pred, axis=0)
         out = ModelServer._decode(y_pred)
+        # for debug
+        # plt.title(out)
+        # plt.subplot(211)
+        # plt.imshow(img)
+        # plt.subplot(212)
+        # plt.imshow(y_pred.T)
+        # plt.show()
         return out
 
     def batch_evaluation(self, img_folder):
         fail_saved_f = 'fail_digit'
-        try:
-            os.remove(fail_saved_f)
-        except:
-            pass
+        # try:
+        #     os.remove(fail_saved_f)
+        # except:
+        #     pass
         os.makedirs(fail_saved_f, exist_ok=True)
         test_img_list = get_file_list(img_folder)
         random.shuffle(test_img_list)
@@ -63,11 +67,11 @@ class ModelServer(object):
             # plt.show()
             if result != label:
                 false_count += 1.
-                src = os.path.join(fail_saved_f, result+'.png')
-                while os.path.exists(src):
-                    src = os.path.join(fail_saved_f, result+'_'+str(random.randint(0, 100))+'.png')
-                shutil.copy(item, src)
-        print('acc for coarse: {}'.format(1. - false_count / len(test_img_list)))
+                # src = os.path.join(fail_saved_f, result+'.png')
+                # while os.path.exists(src):
+                #     src = os.path.join(fail_saved_f, result+'_'+str(random.randint(0, 100))+'.png')
+                # shutil.copy(item, src)
+        print('acc: {}'.format(1. - false_count / len(test_img_list)))
         return
 
     @staticmethod
@@ -81,6 +85,7 @@ class ModelServer(object):
         return u''.join(char_list)
 
 
+# TODO:会导致程序崩溃
 def preprocessing_from_dir(img_dir):
     # 预二值化
     # plt.subplot(121)
@@ -102,9 +107,16 @@ def preprocessing_from_dir(img_dir):
     return img
 
 
+def preprocessing_from_dir_test(img_dir):
+    # 预二值化
+    # plt.subplot(121)
+    img = cv2.imread(img_dir, 0) / 255
+    return img
+
+
 if __name__ == '__main__':
-    model_dir = 'D:\herschel\changrong\sequential_ocr\models\digit_model\digit-emnist-0.07-0.64.h5'
+    model_dir = 'D:\herschel\changrong\sequential_ocr\models\sequential_digit'
     model_server = ModelServer(model_dir)
-    # test_img_f = 'D:\herschel\changrong\sequential_ocr\\test_img\\train\digit\evaluation'
-    test_img_f = 'D:\herschel\changrong\sequential_ocr\\test_img\\train\digit\merge'
+    test_img_f = 'D:\herschel\changrong\sequential_ocr\\test_img\\train\digit\evaluation'
+    # test_img_f = 'D:\herschel\changrong\sequential_ocr\\test_img\\train\digit\\emnist'
     model_server.batch_evaluation(test_img_f)

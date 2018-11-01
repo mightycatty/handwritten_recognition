@@ -1,5 +1,17 @@
-sequential digital number recognition
+基于DenseNet+CTC的序列手写识别，包括字母与数字两种模型
 
+重要文件：
+    config:对模型与数据的定义
+    data_utils_pack: 数据准备与预处理，包括数据合成与为训练打包
+    train_digit/train_letter: 训练文件
+    inference/inference_letter: 模型结果demo
+
+运行：
+1. config配置：主要配置TrainingConfig训练参数
+2. 数据准备下载emnist，放置于generator_digit中要求的路径下
+3. 运行train_digit或者train_letter
 
 Referecne:
 [1] https://github.com/YCG09/chinese_ocr (主要代码借鉴)
+
+

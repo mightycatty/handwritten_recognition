@@ -108,6 +108,10 @@ def ctc_lambda_func(args):
     return K.ctc_batch_cost(labels, y_pred, input_length, label_length)
 
 
+def ctc_decoder_fn(y_pred, input_length):
+    return K.ctc_decode(y_pred, input_length)
+
+
 def compile_model(img_h, nclass):
     """
     prepare model for training which is different from model for inference
@@ -122,6 +126,7 @@ def compile_model(img_h, nclass):
     input_length = Input(name='input_length', shape=[1], dtype='int64')
     label_length = Input(name='label_length', shape=[1], dtype='int64')
     loss_out = Lambda(ctc_lambda_func, output_shape=(1,), name='ctc')([basemodel.output, labels, input_length, label_length])
+    # predict_out = Lambda(ctc_decoder_fn, name='decoder_output')([basemodel.output, input])
     model = Model(inputs=[basemodel.input, labels, input_length, label_length], outputs=loss_out)
     # from keras.utils import multi_gpu_model
     # model = multi_gpu_model(model, 2)
@@ -130,3 +135,7 @@ def compile_model(img_h, nclass):
     opt = 'adam'
     model.compile(loss={'ctc': lambda y_true, y_pred: y_pred}, optimizer=opt, metrics=['accuracy'])
     return basemodel, model
+
+
+if __name__ == '__main__':
+    weights_dir = 'D:\herschel\changrong\sequential_ocr\models\digit_model\\base-0.812-0.927.h5'
