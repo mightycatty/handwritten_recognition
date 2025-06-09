@@ -1,17 +1,35 @@
-基于DenseNet+CTC的序列手写识别，包括字母与数字两种模型
+# Handwritten Sequence Recognition Based on DenseNet + CTC
 
-重要文件：
-    config:对模型与数据的定义
-    data_utils_pack: 数据准备与预处理，包括数据合成与为训练打包
-    train_digit/train_letter: 训练文件
-    inference/inference_letter: 模型结果demo
+Handwritten sequence recognition uses a DenseNet backbone combined with a CTC (Connectionist Temporal Classification) loss. 
+Two separate models are provided for recognizing **letters** and **digits**.
 
-运行：
-1. config配置：主要配置TrainingConfig训练参数
-2. 数据准备下载emnist，放置于generator_digit中要求的路径下
-3. 运行train_digit或者train_letter
+---
 
-Referecne:
-[1] https://github.com/YCG09/chinese_ocr (主要代码借鉴)
+## 📁 Key Components
 
+- **`config/`**  
+  Contains configuration files for model structure and training parameters.
 
+- **`data_utils_pack/`**  
+  Data preparation and preprocessing utilities, including data synthesis and packaging for training.
+
+- **`train_digit/`, `train_letter/`**  
+  Scripts for training digit and letter recognition models.
+
+- **`inference/`, `inference_letter/`**  
+  Demo scripts for model inference and visualizing prediction results.
+
+---
+
+## 🚀 How to Run
+
+1. **Configure Training**  
+   Edit `config/TrainingConfig` to set training parameters (e.g., batch size, learning rate, model path, etc.).
+
+2. **Prepare Dataset**  
+   Download the [EMNIST dataset](https://www.nist.gov/itl/products-and-services/emnist-dataset) and place it in the path expected by `generator_digit/`.
+
+3. **Start Training**  
+   Run either:
+   ```bash
+   python train_digit/train.py
